@@ -8,7 +8,7 @@
 import Foundation
 import AVFoundation
 
-@Observable
+@Observable //Observes any changes in this class and refreshes any views upon change.
 class AudioBox: NSObject, ObservableObject {
     
     //@Published refreshes any views using status upon change
@@ -22,14 +22,23 @@ class AudioBox: NSObject, ObservableObject {
     var urlForMemo: URL {
         let fileManager = FileManager.default
         let tempDir = fileManager.temporaryDirectory
-        let filePath = "TempMemo.caf"
+        let filePath = "TempMemo.m4a"
+        //For caf file format
+        //let filePath = "TempMemo.caf"
         return tempDir.appendingPathComponent(filePath)
     }
     
     func setupRecorder() {
-        let recordSettings: [String: Any] = [
-            AVFormatIDKey: Int(kAudioFormatLinearPCM),
-            AVSampleRateKey: 44100.0,
+        //For caf file format
+//        let recordSettings: [String: Any] = [
+//            AVFormatIDKey: Int(kAudioFormatLinearPCM),
+//            AVSampleRateKey: 44100.0,
+//            AVNumberOfChannelsKey: 1,
+//            AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+//        ]
+        let recordSettings = [
+            AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+            AVSampleRateKey: 12000,
             AVNumberOfChannelsKey: 1,
             AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
         ]
