@@ -6,16 +6,63 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 struct ContentView: View {
+    
+    @State private var audioBox = AudioBox()
+    @State private var hasMicAccess = false
+    @State private var displayNotification = false
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            ZStack {
+                VStack {
+                    Button {
+                        //Action
+                        if (audioBox.status == .stopped) {
+                            if hasMicAccess == true {
+                                print("Record: \(audioBox.status)")
+                                audioBox.record()
+                            } else {
+                                requestMicrophoneAccess()
+                            }
+                        } else {
+                            audioBox.stopRecording()
+                        }
+                        
+                    } label: {
+                        Image(systemName: audioBox.status == .stopped ? "microphone.slash" : "microphone")
+                    }
+                    .font(.title)
+
+                }
+            }
+            .onAppear {
+                audioBox.setupRecorder()
+            }
+            .navigationTitle("VoiceBox")
+            .alert("", isPresented: $displayNotification) {
+                Button("OK") {}
+            } message: {
+                Text("Go to Settings > VoiceBox > Allow VoiceBox to Access Microphone.\nSet switch to enable.")
+            }
+
         }
-        .padding()
+    }
+    
+    private func requestMicrophoneAccess() {
+        let session = AVAudioSession.sharedInstance()
+        session.requestRecordPermission { granted in
+            hasMicAccess = granted
+            
+            if granted == true {
+                audioBox.record()
+            } else {
+                displayNotification = true
+            }
+        }
+        
     }
 }
 
